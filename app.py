@@ -1,119 +1,145 @@
-from flask import Flask,jsonify
-import pathlib
-import textwrap
-import json
-from langchain.prompts import PromptTemplate
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import google.generativeai as genai
-from langchain import Cohere, ConversationChain, LLMChain, PromptTemplate
-from langchain.chains import SimpleSequentialChain, LLMChain
-from langchain.chains.question_answering import load_qa_chain
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAI
+from langchain.prompts import PromptTemplate
 import os
-from dotenv import load_dotenv
 
+app = Flask(__name__)
+CORS(app)
 
-app=Flask(__name__)
-load_dotenv()
-super = ChatGoogleGenerativeAI(model='gemini-pro',google_api_key=os.getenv('api_key'))
+# Configure Google API key
+GOOGLE_API_KEY = os.getenv('api_key')
+genai.configure(api_key=GOOGLE_API_KEY)
 
-prompt ="""Your are an AI Question generation.Your name is Qgenerator. Your main task is to prepare different type of question. You can prepare both Descriptive and Objective questions.In the Descriptive questions you are 
-supposed to ask only descriptive questions. On the other hand is the option is objective, then you should generate questions along with 4 multiple choice options namely A,B,C and D with only one correct option
-The Topic and the difficulty level are given below, based on the difficulty level prepare the questions only related to relevent topic,no extra questions rather than topic. 
-The difficulty level is given by the student if the difficulty level is expert then you must prepare question with twists and very hard for the student to attempt the question, but remeber the questions 
-must be only related to the topic given by student. You can get the topic, difficulty level, question type and number of questions from the student below. The output must be in JSON format with question, question type, options , correct option and explanation for the correct option in single line.If Question is objective generate only objective question, no descriptive questions should be asked.
-question type: {question}
-topic :{topic}
-Difficulty: {difficulty}
-number of questions: {number}
+# Initialize Gemini model
+llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_API_KEY)
+
+# Prompt templates (unchanged)
+GENERAL_PROMPT_TEMPLATE = """
+Your are an AI Question generation.Your name is Qgenerator. Your main task is to prepare different type of question. You can prepare both Descriptive and Objective questions.In the Descriptive questions you are
+supposed to ask only descriptive questions. On the other hand is the option is objective, then you should generate questions along with 4 multiple choice options namely A,B,C and D with only one correct option.
+And if the questions are descriptive generate both question and answer for the question  this is mandetory to generate answer every time.Remeber if the descriptive questions are in expert leve then remember to give long questions.
+The topic from which question should be asked and the difficulty level are given below, based on the difficulty level prepare the questions only given from the given topic,no extra questions.
+The difficulty level is given by the student if the difficulty level is expert then you must prepare question with twists and very hard for the student to attempt the question, but remeber the questions
+must be only related to the topic given by student. You can get the topic, difficulty level, question type and number of questions from the student below. The output must be in JSON format with question, question type, options , correct option and explanation for the correct option in single line.If Question is objective generate only objective question, no descriptive questions should be asked,
+
+For objective questions, include 4 options and mark the correct answer.
+For descriptive questions, include a model answer.
+You must generate the coorect option.
+
+question type: {question_type}
+topic :{topics}
+Difficulty: {difficulty_level}
+number of questions: {num_questions}
 
 example :[
   Student: objective, machine learning, easy,1
   Qgenerator : [which of the following is a unsupervised machine learning algorithm?
                 A. KNN
-                B. Linear Regressions
+                B. Linear Regression
                 C. K-means Clusturing
-                D. Q-learning] 
+                D. Q-learning]
 
   Student: descriptive, machine learning, medium,1
-  Qgenerator : [Why do we use normalization? Types of Normalizations used in Machine Learning?]
-]
+  Qgenerator : [Why do we use normalization? Types of Normalizations used in Machine Learning?
+  
+  answer. Normalization is a data preprocessing technique commonly used in machine learning to rescale input data to a common scale, 
+  often between 0 and 1 or -1 and 1. This is particularly useful when dealing with features of different ranges and units,
+    as many machine learning algorithms are sensitive to the scale of the input data.]
+]"""
+EXTRACTED_TEXT_PROMPT_TEMPLATE = """
+Based on the following text content:
+{text_content}
+Your are an AI Question generation.Your name is Qgenerator. Your main task is to prepare different type of question. You can prepare both Descriptive and Objective questions.In the Descriptive questions you are
+supposed to ask only descriptive questions. On the other hand is the option is objective, then you should generate questions along with 4 multiple choice options namely A,B,C and D with only one correct option.
+And if the questions are descriptive generate both question and answer for the question  this is mandetory to generate answer every time.Remeber if the descriptive questions are in expert leve then remember to give long questions.
+The context from which question should be asked and the difficulty level are given below, based on the difficulty level prepare the questions only given from the given topic,no extra questions.
+The difficulty level is given by the student if the difficulty level is expert then you must prepare question with twists and very hard for the student to attempt the question, but remeber the questions
+must be only related to the topic given by student. You can get the difficulty level, question type and number of questions from the student below. The output must be in JSON format with question, question type, options , correct option and explanation for the correct option in single line.If Question is objective generate only objective question, no descriptive questions should be asked,
+You must generate the correct option.
+For objective questions, include 4 options and giving the correct answer is aslo important.If there is no answer for the question then do not generate the question.
+Generate only the question from the text where you can find answers and also you can provide a clear explanation.
+For descriptive questions, include a model answer in the exaplantion.
 
-"""
+question type: {question_type}
+Difficulty: {difficulty_level}
+number of questions: {num_questions}
 
-template = prompt
-promptTemplate = PromptTemplate(input_variables=["question","topic","difficulty","number"], template=template)
-synopsisChain = LLMChain(
-    llm=super,
-    prompt=promptTemplate,
-    verbose=True,
-)
+example :[
+  Student: objective, machine learning, easy,1
+  Qgenerator : [which of the following is a unsupervised machine learning algorithm?
+                A. KNN
+                B. Linear Regression
+                C. K-means Clusturing
+                D. Q-learning]
 
+  Student: descriptive, machine learning, medium,1
+  Qgenerator : [Why do we use normalization? Types of Normalizations used in Machine Learning?
 
-@app.route('/get/<question_type>/<topic>/<difficulty>/<number>')
-def welcome(question_type, topic, difficulty, number):
+  answer. Normalization is a data preprocessing technique commonly used in machine learning to rescale input data to a common scale, 
+  often between 0 and 1 or -1 and 1. This is particularly useful when dealing with features of different ranges and units,
+    as many machine learning algorithms are sensitive to the scale of the input data.]"""
+
+@app.route('/api/generate-general-exam', methods=['POST'])
+def generate_general_exam():
     try:
-        all_questions = []
-        number = int(number)
+        data = request.json
         
-        if number > 10:
-
-            for i in range(0, number, 10):
+        prompt = PromptTemplate(
+            template=GENERAL_PROMPT_TEMPLATE,
+            input_variables=["num_questions", "question_type", "topics", "difficulty_level"]
+        )
         
-                output = synopsisChain.run(
-                    question=question_type,
-                    topic=topic,
-                    difficulty=difficulty,
-                    number=min(10, number - i)  
-                )
-                
-                
-                if isinstance(output, str):
-                    output = json.loads(output)
-                
-            
-                if isinstance(output, list):
-                    all_questions.extend(output)
-                else:
-                    all_questions.append(output)
-                
-        else:
-            
-            output = synopsisChain.run(
-                question=question_type,
-                topic=topic,
-                difficulty=difficulty,
-                number=number
-            )
-            
-            
-            if isinstance(output, str):
-                output = json.loads(output)
-            
-            
-            if isinstance(output, list):
-                all_questions.extend(output)
-            else:
-                all_questions.append(output)
+        formatted_prompt = prompt.format(
+            num_questions=data['numQuestions'],
+            question_type=data['questionType'],
+            topics=data['topics'],
+            difficulty_level=data['difficultyLevel']
+        )
         
-
+        response = llm.invoke(formatted_prompt)
+        
         return jsonify({
-            "status": "success",
-            "questions": all_questions,
-            "count": len(all_questions)
+            "success": True,
+            "data": response
         })
-        
-    except json.JSONDecodeError as e:
-        return jsonify({
-            "status": "error",
-            "message": f"Invalid JSON format: {str(e)}",
-            "questions": []
-        }), 400
-        
+    
     except Exception as e:
         return jsonify({
-            "status": "error",
-            "message": f"An error occurred: {str(e)}",
-            "questions": []
+            "success": False,
+            "error": str(e)
         }), 500
-if __name__=='__main__':
-    app.run()
+
+@app.route('/api/generate-extracted-text-exam', methods=['POST'])
+def generate_extracted_text_exam():
+    try:
+        data = request.json
+        
+        prompt = PromptTemplate(
+            template=EXTRACTED_TEXT_PROMPT_TEMPLATE,
+            input_variables=["text_content", "num_questions", "question_type", "difficulty_level"]
+        )
+        
+        formatted_prompt = prompt.format(
+            text_content=data['textContent'],
+            num_questions=data['numQuestions'],
+            question_type=data['questionType'],
+            difficulty_level=data['difficultyLevel']
+        )
+        
+        response = llm.invoke(formatted_prompt)
+        
+        return jsonify({
+            "success": True,
+            "data": response
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
