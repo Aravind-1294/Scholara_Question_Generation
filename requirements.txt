@@ -1,7 +1,8 @@
 flask==3.0.0
 flask-cors==4.0.0
-google-generativeai
-langchain-google-genai
+google-generativeai==0.3.2
+langchain==0.0.352
+langchain-google-genai==0.0.5
 gunicorn==21.2.0
 gevent==23.9.1
-python-dotenv
+python-dotenv==1.0.0
