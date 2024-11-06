@@ -4,15 +4,13 @@ from langchain_google_genai import GoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from app.config import Config
 from app.utils import GENERAL_PROMPT_TEMPLATE, EXTRACTED_TEXT_PROMPT_TEMPLATE
-import os
-
 
 api_bp = Blueprint('api', __name__)
 
 # Configure Google API
-GOOGLE_API_KEY=os.getenv('api_key')
-genai.configure(api_key=GOOGLE_API_KEY)
-llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=GOOGLE_API_KEY)
+
+genai.configure(api_key=Config.GOOGLE_API_KEY)
+llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=Config.GOOGLE_API_KEY)
 
 @api_bp.route('/api/generate-general-exam', methods=['POST'])
 def generate_general_exam():
