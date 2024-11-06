@@ -1,5 +1,8 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Config:
-    GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-    # Add other configuration variables here
+    GOOGLE_API_KEY = os.getenv('api_key')
+    DEBUG = False
