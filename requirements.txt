@@ -1,5 +1,7 @@
-flask
-FLask-Cors
-langchain_community
-langchain_google_genai
+flask==3.0.0
+flask-cors==4.0.0
+google-generativeai
+langchain-google-genai
+gunicorn==21.2.0
+gevent==23.9.1
 python-dotenv
