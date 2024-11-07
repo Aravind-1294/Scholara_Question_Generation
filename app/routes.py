@@ -24,6 +24,7 @@ must be only related to the topic given by student. You can get the topic, diffi
 For objective questions, include 4 options and mark the correct answer.
 For descriptive questions, include a model answer.If the question is desccriptive it is mandatory for you to generate the model answer.
 If the topic is Mathematics related which required mathematical calculation in description provide the complete calculation in the model answer.
+You are making silly mistakes in mathematics. Remeber not to give any silly errors in the answer and explanation.
 You must generate the coorect option.
 
 question type: {question_type}
@@ -60,6 +61,7 @@ For objective questions, include 4 options and giving the correct answer is aslo
 Generate only the question from the text where you can find answers and also you can provide a clear explanation.
 For descriptive questions, include a model answer in the exaplantion.If the question is desccriptive it is mandatory for you to generate the model answer.
 If the topic is Mathematics related which required mathematical calculation in description provide the complete calculation in the model answer.
+You are making silly mistakes in mathematics. Remeber not to give any silly errors in the answer and explanation.
 
 question type: {question_type}
 Difficulty: {difficulty_level}
