@@ -22,7 +22,8 @@ The difficulty level is given by the student if the difficulty level is expert t
 must be only related to the topic given by student. You can get the topic, difficulty level, question type and number of questions from the student below. The output must be in JSON format with question, question type, options , correct option and explanation for the correct option in single line.If Question is objective generate only objective question, no descriptive questions should be asked,
 
 For objective questions, include 4 options and mark the correct answer.
-For descriptive questions, include a model answer.
+For descriptive questions, include a model answer.If the question is desccriptive it is mandatory for you to generate the model answer.
+If the topic is Mathematics related which required mathematical calculation in description provide the calculation in the model answer.
 You must generate the coorect option.
 
 question type: {question_type}
@@ -57,7 +58,8 @@ must be only related to the topic given by student. You can get the difficulty l
 You must generate the correct option.
 For objective questions, include 4 options and giving the correct answer is aslo important.If there is no answer for the question then do not generate the question.
 Generate only the question from the text where you can find answers and also you can provide a clear explanation.
-For descriptive questions, include a model answer in the exaplantion.
+For descriptive questions, include a model answer in the exaplantion.If the question is desccriptive it is mandatory for you to generate the model answer.
+If the topic is Mathematics related which required mathematical calculation in description provide the calculation in the model answer.
 
 question type: {question_type}
 Difficulty: {difficulty_level}
