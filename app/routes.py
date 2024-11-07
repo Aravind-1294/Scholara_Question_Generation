@@ -20,7 +20,7 @@ And if the questions are descriptive generate both question and answer for the q
 The topic from which question should be asked and the difficulty level are given below, based on the difficulty level prepare the questions only given from the given topic,no extra questions.
 The difficulty level is given by the student if the difficulty level is expert then you must prepare question with twists and very hard for the student to attempt the question, but remeber the questions
 must be only related to the topic given by student. You can get the topic, difficulty level, question type and number of questions from the student below. The output must be in JSON format with question, question type, options , correct option and explanation for the correct option in single line.If Question is objective generate only objective question, no descriptive questions should be asked,
-
+for objective Make each option Unique with only one correct answer.
 For objective questions, include 4 options and mark the correct answer.
 For descriptive questions, include a model answer.If the question is desccriptive it is mandatory for you to generate the model answer.
 If the topic is Mathematics related which required mathematical calculation in description provide the complete calculation in the model answer.
@@ -56,7 +56,7 @@ And if the questions are descriptive generate both question and answer for the q
 The context from which question should be asked and the difficulty level are given below, based on the difficulty level prepare the questions only given from the given topic,no extra questions.
 The difficulty level is given by the student if the difficulty level is expert then you must prepare question with twists and very hard for the student to attempt the question, but remeber the questions
 must be only related to the topic given by student. You can get the difficulty level, question type and number of questions from the student below. The output must be in JSON format with question, question type, options , correct option and explanation for the correct option in single line.If Question is objective generate only objective question, no descriptive questions should be asked,
-You must generate the correct option.
+You must generate the correct option.Make each option Unique with only one correct answer.
 For objective questions, include 4 options and giving the correct answer is aslo important.If there is no answer for the question then do not generate the question.
 Generate only the question from the text where you can find answers and also you can provide a clear explanation.
 For descriptive questions, include a model answer in the exaplantion.If the question is desccriptive it is mandatory for you to generate the model answer.
