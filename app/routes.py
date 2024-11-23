@@ -10,7 +10,7 @@ api_bp = Blueprint('api', __name__)
 genai.configure(api_key=Config.GOOGLE_API_KEY)
 
 # Initialize Gemini model
-llm = GoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=Config.GOOGLE_API_KEY)
+llm = GoogleGenerativeAI(model="gemini-pro", google_api_key=Config.GOOGLE_API_KEY)
 
 # Updated prompt templates for MCQs only
 GENERAL_PROMPT_TEMPLATE = """
