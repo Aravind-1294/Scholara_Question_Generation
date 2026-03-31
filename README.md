@@ -71,24 +71,23 @@ Response:
 
 This backend is part of the Scholara AI system:
 
-##👉 Frontend Repo:
-https://github.com/Aravind-1294/Scholara
- (update if needed)
+👉 Frontend Repo:
+(https://github.com/Aravind-1294/Scolara.git)
 
-##📊 Functionality
+📊 Functionality
 Accepts input text via API
 Processes content using LLMs
 Applies prompt engineering
 Returns structured question outputs
 
-##🚀 Future Improvements
+🚀 Future Improvements
 Add caching for faster responses (Redis)
 Implement evaluation metrics for question quality
 Add user authentication
 Deploy backend using Docker + AWS
 Add streaming responses
 
-##🧠 Key Learnings
+🧠 Key Learnings
 Building backend systems for AI applications
 Integrating LLMs into APIs
 Designing scalable AI services
