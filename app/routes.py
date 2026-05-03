@@ -33,7 +33,7 @@ number of questions: {num_questions}
 
 example:
 [
-  {
+  {{
     "question": "Which of the following is an unsupervised machine learning algorithm?",
     "question_type": "mcq",
     "options": [
@@ -44,7 +44,7 @@ example:
     ],
     "correct_option": "K-means Clustering",
     "explanation": "K-means clustering is unsupervised because it draws inferences from unlabeled data."
-  }
+  }}
 ]
 """
 
@@ -71,7 +71,7 @@ number of questions: {num_questions}
 
 example:
 [
-  {
+  {{
     "question": "Which of the following is an unsupervised machine learning algorithm?",
     "question_type": "mcq",
     "options": [
@@ -82,7 +82,7 @@ example:
     ],
     "correct_option": "K-means Clustering",
     "explanation": "K-means clustering is unsupervised because it draws inferences from unlabeled data."
-  }
+  }}
 ]
 """
 
