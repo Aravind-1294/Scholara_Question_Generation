@@ -10,7 +10,7 @@ api_bp = Blueprint('api', __name__)
 genai.configure(api_key=Config.GOOGLE_API_KEY)
 
 # Initialize Gemini model
-llm = GoogleGenerativeAI(model="gemini-3.1-flash-lite-preview", google_api_key=Config.GOOGLE_API_KEY)
+llm = GoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=Config.GOOGLE_API_KEY)
 
 # Updated prompt templates for MCQs only
 GENERAL_PROMPT_TEMPLATE = """
@@ -33,13 +33,20 @@ number of questions: {num_questions}
 
 example:
 [
-  Student: mcq, machine learning, easy, 1
-  Qgenerator: [which of the following is a unsupervised machine learning algorithm?
-                A. KNN
-                B. Linear Regression
-                C. K-means Clustering
-                D. Q-learning]
-]"""
+  {
+    "question": "Which of the following is an unsupervised machine learning algorithm?",
+    "question_type": "mcq",
+    "options": [
+      "KNN",
+      "Linear Regression",
+      "K-means Clustering",
+      "Q-learning"
+    ],
+    "correct_option": "K-means Clustering",
+    "explanation": "K-means clustering is unsupervised because it draws inferences from unlabeled data."
+  }
+]
+"""
 
 EXTRACTED_TEXT_PROMPT_TEMPLATE = """
 Based on the following text content:
@@ -64,13 +71,20 @@ number of questions: {num_questions}
 
 example:
 [
-  Student: mcq, machine learning, easy, 1
-  Qgenerator: [which of the following is a unsupervised machine learning algorithm?
-                A. KNN
-                B. Linear Regression
-                C. K-means Clustering
-                D. Q-learning]
-]"""
+  {
+    "question": "Which of the following is an unsupervised machine learning algorithm?",
+    "question_type": "mcq",
+    "options": [
+      "KNN",
+      "Linear Regression",
+      "K-means Clustering",
+      "Q-learning"
+    ],
+    "correct_option": "K-means Clustering",
+    "explanation": "K-means clustering is unsupervised because it draws inferences from unlabeled data."
+  }
+]
+"""
 
 @api_bp.route('/api/generate-general-exam', methods=['POST'])
 def generate_general_exam():
