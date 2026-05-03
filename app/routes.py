@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 import google.generativeai as genai
 from langchain_google_genai import GoogleGenerativeAI
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 from app.config import Config
 
 api_bp = Blueprint('api', __name__)
