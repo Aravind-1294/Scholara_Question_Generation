@@ -294,3 +294,15 @@ def get_chat_history():
         return jsonify({"success": True, "messages": response.data})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@api_bp.route('/api/chat-sessions/<session_id>', methods=['DELETE'])
+def delete_session(session_id):
+    try:
+        supabase.table("exam_document_chunks").delete().eq("session_id", session_id).execute()
+        supabase.table("exam_chat_history").delete().eq("session_id", session_id).execute()
+        supabase.table("exam_chat_sessions").delete().eq("id", session_id).execute()
+        
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
