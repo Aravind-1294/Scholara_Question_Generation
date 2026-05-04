@@ -195,7 +195,7 @@ def embed_pdf():
         for split in splits:
             chunk_text = split.page_content
             result = genai.embed_content(
-                model="models/text-embedding-004",
+                model="gemini-embedding-001",
                 content=chunk_text,
                 task_type="retrieval_document"
             )
