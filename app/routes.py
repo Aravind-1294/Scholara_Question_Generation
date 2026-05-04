@@ -197,7 +197,8 @@ def embed_pdf():
             result = genai.embed_content(
                 model="gemini-embedding-001",
                 content=chunk_text,
-                task_type="retrieval_document"
+                task_type="retrieval_document",
+                output_dimensionality=768
             )
             embedding_vector = result['embedding']
             
@@ -225,9 +226,10 @@ def chat():
             "content": message
         }).execute()
         result = genai.embed_content(
-            model="models/text-embedding-004",
+            model="gemini-embedding-001",
             content=message,
-            task_type="retrieval_query"
+            task_type="retrieval_query",
+            output_dimensionality=768
         )
         query_embedding = result['embedding']
         rag_response = supabase.rpc("match_exam_chunks", {
