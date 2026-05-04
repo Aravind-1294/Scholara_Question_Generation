@@ -7,3 +7,6 @@ langchain-google-genai
 gunicorn
 gevent
 python-dotenv
+supabase
+pypdf
+langchain-community
