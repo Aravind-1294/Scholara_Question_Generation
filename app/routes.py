@@ -202,7 +202,7 @@ def embed_pdf():
             batch_texts = [chunk.page_content for chunk in batch_splits]
             
             result = genai.embed_content(
-                model="models/embedding-001",
+                model="gemini-embedding-001",
                 content=batch_texts,
                 task_type="retrieval_document",
                 output_dimensionality=768
