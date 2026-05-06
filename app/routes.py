@@ -175,14 +175,17 @@ def embed_pdf():
         file = request.files['file']
         user_email = request.form.get('userEmail')
         pdf_name = file.filename
+        
         session_res = supabase.table('exam_chat_sessions').insert({
             "user_email": user_email,
             "pdf_name": pdf_name
         }).execute()
         session_id = session_res.data[0]['id']
+        
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp_file:
             file.save(tmp_file.name)
             tmp_path = tmp_file.name
+            
         loader = PyPDFLoader(tmp_path)
         pages = loader.load()
         
@@ -192,21 +195,29 @@ def embed_pdf():
             separators=["\n\n", "\n", ".", " ", ""]
         )
         splits = text_splitter.split_documents(pages)
-        for split in splits:
-            chunk_text = split.page_content
+        
+        batch_size = 50
+        for i in range(0, len(splits), batch_size):
+            batch_splits = splits[i : i + batch_size]
+            batch_texts = [chunk.page_content for chunk in batch_splits]
+            
             result = genai.embed_content(
-                model="gemini-embedding-001",
-                content=chunk_text,
+                model="models/embedding-001",
+                content=batch_texts,
                 task_type="retrieval_document",
                 output_dimensionality=768
             )
-            embedding_vector = result['embedding']
             
-            supabase.table('exam_document_chunks').insert({
-                "exam_id": session_id,
-                "content": chunk_text,
-                "embedding": embedding_vector
-            }).execute()
+            rows_to_insert = []
+            for j, text in enumerate(batch_texts):
+                rows_to_insert.append({
+                    "exam_id": session_id,
+                    "content": text,
+                    "embedding": result['embedding'][j]
+                })
+                
+            supabase.table('exam_document_chunks').insert(rows_to_insert).execute()
+            
         os.remove(tmp_path)
         return jsonify({"success": True, "sessionId": session_id})
     except Exception as e:
